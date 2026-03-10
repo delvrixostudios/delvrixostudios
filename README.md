@@ -43,7 +43,7 @@ Representing Delvrixo Studios on every competitive platform.
 
 - 📧 delvrixo.studios@gmail.com
 - 📸 [@delvrixo.studios](https://instagram.com/delvrixo.studios)
-- 💼 [LinkedIn](https://linkedin.com/in/delvrixo-studios-2246633b6)
+- 💼 [LinkedIn](https://linkedin.com/in/delvrixo-studios)
 
 ---
 
