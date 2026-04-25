@@ -106,8 +106,34 @@ section{position:relative;z-index:2}
 .tickets-container{position:relative;z-index:2;width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d}
 .ticket-card{position:absolute;width:270px;background:#111;border:1px solid #333;border-radius:16px;padding:28px;box-shadow:0 40px 80px rgba(0,0,0,0.9);display:flex;flex-direction:column;gap:18px;transition:transform .2s ease-out}
 .ticket-card *{color:#fff}
-.ticket-1{transform:rotate(-10deg) translate(-40px,-20px) translateZ(50px);z-index:3;background:#0A0A0A;border-color:rgba(255,70,37,.3)}
-.ticket-2{transform:rotate(8deg) translate(60px,40px) translateZ(20px);z-index:2;background:#1A1A1A}
+/* ─── TICKET CAROUSEL ─── */
+.tickets-container{position:relative;width:260px;height:340px;margin:0 auto;perspective:900px;cursor:none}
+.tc-slide{
+  position:absolute;inset:0;
+  border-radius:20px;border:1px solid rgba(255,255,255,0.08);
+  padding:24px;display:flex;flex-direction:column;
+  background:#0A0A0A;
+  box-shadow:0 30px 80px rgba(0,0,0,0.7);
+  transform-origin:center bottom;
+  transition:none; /* GSAP handles this */
+  user-select:none;
+  will-change:transform,opacity;
+}
+/* stack states: active=top, next=behind-right, prev=behind-left */
+.tc-slide[data-state="active"]{z-index:10;opacity:1}
+.tc-slide[data-state="next"]{z-index:5;opacity:.6}
+.tc-slide[data-state="hidden"]{z-index:1;opacity:0}
+.tc-bullets{font-family:var(--font-m);font-size:9px;color:#888;line-height:1.9;margin-top:6px;letter-spacing:.04em}
+.tc-barcode{height:36px;display:flex;gap:3px;align-items:flex-end;margin-top:auto}
+.tc-barcode div{background:#fff;height:100%;width:2px;border-radius:2px}
+.tc-barcode div:nth-child(2n){height:70%;width:4px}
+.tc-barcode div:nth-child(3n){height:50%;width:1px}
+/* dots */
+.tc-dots{position:absolute;bottom:-32px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20}
+.tc-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all .3s;cursor:none}
+.tc-dot.active{width:20px;border-radius:4px;background:var(--accent)}
+/* swipe hint */
+.tc-hint{position:absolute;bottom:-56px;left:50%;transform:translateX(-50%);font-family:var(--font-m);font-size:10px;color:#888;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;opacity:1;transition:opacity .4s}
 .tc-header{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-m);font-size:10px;letter-spacing:0.1em;color:#888;border-bottom:1px solid #333;padding-bottom:10px}
 .tc-title{font-family:var(--font-d);font-size:46px;line-height:1;margin:8px 0}
 .ticket-1 .tc-title{color:var(--accent)}
@@ -357,20 +383,43 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <div class="hero-visual reveal">
       <div class="black-arch"><div class="arch-glow"></div></div>
       <div class="tickets-container" id="heroCards">
-        <div class="ticket-card ticket-1">
+
+        <!-- Card 1: Launch Kit -->
+        <div class="ticket-card tc-slide" data-index="0">
           <div class="tc-header"><span>DELVRIXO ACCESS</span><span>NO. 001</span></div>
-          <h3 class="tc-title">LAUNCH<br>KIT</h3>
+          <h3 class="tc-title" style="color:var(--accent)">LAUNCH<br>KIT</h3>
           <div class="tc-price"><span class="cur">₹</span>5K–15K</div>
-          <div style="font-family:var(--font-m);font-size:9px;color:#888;line-height:1.7;margin-top:6px;letter-spacing:.04em">• Websites for founders<br>• 1–10 pages<br>• Delivered in 1–2 weeks</div>
-          <div class="tc-barcode" style="margin-top:10px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+          <div class="tc-bullets">• Websites for founders<br>• 1–10 pages<br>• Delivered in 1–2 weeks</div>
+          <div class="tc-barcode"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
-        <div class="ticket-card ticket-2">
+
+        <!-- Card 2: MVP System -->
+        <div class="ticket-card tc-slide" data-index="1">
           <div class="tc-header"><span>DELVRIXO ACCESS</span><span>NO. 002</span></div>
-          <h3 class="tc-title">MVP<br>SYSTEM</h3>
-          <div class="tc-price" style="color:var(--accent)"><span class="cur" style="color:#888">₹</span>10K–30K</div>
-          <div style="font-family:var(--font-m);font-size:9px;color:#888;line-height:1.7;margin-top:6px;letter-spacing:.04em">• Build your product fast<br>• Core features + UI<br>• Delivered in weeks</div>
-          <div class="tc-barcode" style="margin-top:10px"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+          <h3 class="tc-title" style="color:var(--accent)">MVP<br>SYSTEM</h3>
+          <div class="tc-price"><span class="cur">₹</span>10K–30K</div>
+          <div class="tc-bullets">• Build your product fast<br>• Core features + UI<br>• Delivered in weeks</div>
+          <div class="tc-barcode"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
+
+        <!-- Card 3: Scale Studio -->
+        <div class="ticket-card tc-slide" data-index="2">
+          <div class="tc-header"><span>DELVRIXO ACCESS</span><span>NO. 003</span></div>
+          <h3 class="tc-title" style="color:var(--accent)">SCALE<br>STUDIO</h3>
+          <div class="tc-price"><span class="cur">₹</span>8K–24K<span style="font-size:13px;color:#888">/mo</span></div>
+          <div class="tc-bullets">• Dedicated product team<br>• Monthly sprints<br>• Ongoing retainer</div>
+          <div class="tc-barcode"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+
+        <!-- Dots -->
+        <div class="tc-dots" id="tcDots">
+          <span class="tc-dot active"></span>
+          <span class="tc-dot"></span>
+          <span class="tc-dot"></span>
+        </div>
+
+        <!-- Swipe hint -->
+        <div class="tc-hint" id="tcHint">swipe or tap →</div>
       </div>
     </div>
   </div>
@@ -804,13 +853,104 @@ document.querySelectorAll('.glass-card').forEach(card=>{
   card.addEventListener('mouseleave',()=>gsap.to(card,{rotateX:0,rotateY:0,duration:.7,ease:'power2.out'}));
 });
 
-// ── HERO TICKET PARALLAX
-document.addEventListener('mousemove',e=>{
-  const x=(e.clientX/window.innerWidth-.5)*40;
-  const y=(e.clientY/window.innerHeight-.5)*40;
-  gsap.to('.ticket-1',{x:-40+x*.5,y:-20+y*.5,rotateX:-y*.2,rotateY:x*.2,duration:1.5,ease:'power2.out'});
-  gsap.to('.ticket-2',{x:60+x*1.5,y:40+y*1.5,rotateX:-y*.3,rotateY:x*.3,duration:1.5,ease:'power2.out'});
-});
+// ── TICKET CAROUSEL
+(function(){
+  const slides = Array.from(document.querySelectorAll('.tc-slide'));
+  const dots   = Array.from(document.querySelectorAll('.tc-dot'));
+  const hint   = document.getElementById('tcHint');
+  const container = document.getElementById('heroCards');
+  const N = slides.length;
+  let current = 0;
+  let animating = false;
+
+  // Stack positions
+  const STATES = {
+    active: { x:0,    y:0,   rotZ:0,   scale:1,    opacity:1,   z:10 },
+    next:   { x:18,   y:18,  rotZ:4,   scale:0.93, opacity:0.6, z:5  },
+    hidden: { x:-30,  y:30,  rotZ:-6,  scale:0.86, opacity:0,   z:1  }
+  };
+
+  function getState(i){
+    const diff = (i - current + N) % N;
+    if(diff === 0) return 'active';
+    if(diff === 1) return 'next';
+    return 'hidden';
+  }
+
+  function applyState(slide, state, animate){
+    const s = STATES[state];
+    const method = animate ? gsap.to : gsap.set;
+    method(slide, {
+      x: s.x, y: s.y, rotation: s.rotZ,
+      scale: s.scale, opacity: s.opacity,
+      zIndex: s.z,
+      duration: animate ? 0.55 : 0,
+      ease: 'power3.out'
+    });
+    slide.dataset.state = state;
+  }
+
+  function render(animate){
+    slides.forEach((s,i) => applyState(s, getState(i), animate));
+    dots.forEach((d,i) => d.classList.toggle('active', i === current));
+  }
+
+  function advance(){
+    if(animating) return;
+    animating = true;
+    // Fling active card out to the left
+    gsap.to(slides[current], {
+      x:-280, rotation:-18, opacity:0, duration:0.42, ease:'power2.in',
+      onComplete:()=>{
+        current = (current + 1) % N;
+        // Snap hidden card into next position instantly, then render
+        slides.forEach((s,i) => {
+          if(getState(i) === 'hidden') gsap.set(s, STATES.hidden);
+        });
+        render(true);
+        // Hide hint after first swipe
+        hint.style.opacity = '0';
+        setTimeout(()=>{ animating = false; }, 600);
+      }
+    });
+  }
+
+  // Initial render (no animation)
+  render(false);
+
+  // ── CLICK anywhere on container
+  container.addEventListener('click', advance);
+
+  // ── TOUCH SWIPE
+  let tx0 = 0, ty0 = 0;
+  container.addEventListener('touchstart', e=>{ tx0=e.touches[0].clientX; ty0=e.touches[0].clientY; }, {passive:true});
+  container.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - tx0;
+    const dy = e.changedTouches[0].clientY - ty0;
+    if(Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) advance();
+  }, {passive:true});
+
+  // ── DRAG with mouse
+  let dragging=false, dragX=0;
+  container.addEventListener('mousedown', e=>{ dragging=true; dragX=e.clientX; });
+  window.addEventListener('mouseup', e=>{
+    if(!dragging) return;
+    dragging=false;
+    if(Math.abs(e.clientX-dragX)>40) advance();
+  });
+
+  // ── SUBTLE tilt on hover (active card only)
+  container.addEventListener('mousemove', e=>{
+    if(animating) return;
+    const r = container.getBoundingClientRect();
+    const x = ((e.clientX-r.left)/r.width-.5)*12;
+    const y = ((e.clientY-r.top)/r.height-.5)*-8;
+    gsap.to(slides[current], {rotateX:y, rotateY:x, duration:.6, ease:'power2.out', transformPerspective:800});
+  });
+  container.addEventListener('mouseleave', ()=>{
+    gsap.to(slides[current], {rotateX:0, rotateY:0, duration:.7, ease:'power2.out'});
+  });
+})();
 
 // ── SCROLL REVEALS (exclude pricing pills — managed separately)
 document.querySelectorAll('.reveal,.reveal-blur').forEach(el=>{
