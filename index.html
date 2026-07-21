@@ -36,10 +36,25 @@ body{background:var(--bg-main);color:var(--text-main);font-family:var(--font-b);
 /* ─── CURSOR ─── */
 #cur-ring{width:34px;height:34px;border:2px solid var(--accent);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,border-color .2s}
 #cur-ring.magnet{width:60px;height:60px;border-color:transparent;background:rgba(255,70,37,0.15)}
+#cur-ring.cta-hover{width:80px;height:80px;border-color:transparent;background:rgba(255,70,37,0.85);mix-blend-mode:normal}
+#cur-ring.img-hover{width:90px;height:90px;border-color:rgba(255,255,255,.8);background:rgba(0,0,0,0.25)}
 
 /* ─── AMBIENT BG ─── */
 .ambient-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:var(--bg-main);transition:background .6s}
 .ambient-bg.dark-mode{background:var(--bg-dark)}
+.mesh-layer{position:absolute;inset:-20%;opacity:.35;filter:blur(60px);background:
+  radial-gradient(circle at 20% 30%, rgba(255,70,37,.35) 0%, transparent 45%),
+  radial-gradient(circle at 80% 20%, rgba(91,154,255,.28) 0%, transparent 45%),
+  radial-gradient(circle at 50% 80%, rgba(78,203,110,.22) 0%, transparent 45%);
+  animation:meshDrift 22s ease-in-out infinite alternate;
+  will-change:transform;
+}
+.dark-mode .mesh-layer{opacity:.5}
+@keyframes meshDrift{
+  0%{transform:translate3d(0,0,0) scale(1) rotate(0deg)}
+  50%{transform:translate3d(3%,-2%,0) scale(1.08) rotate(6deg)}
+  100%{transform:translate3d(-2%,3%,0) scale(1.04) rotate(-4deg)}
+}
 .grid-overlay{
   position:absolute;inset:0;
   background-image:linear-gradient(var(--border-grid) 1px,transparent 1px),linear-gradient(90deg,var(--border-grid) 1px,transparent 1px);
@@ -59,14 +74,14 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 nav{
   position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:100;
   display:flex;align-items:center;justify-content:space-between;gap:40px;
-  background:rgba(226,224,209,0.88);backdrop-filter:blur(20px);
+  background:rgba(226,224,209,0.55);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
   padding:12px 24px 12px 32px;border-radius:100px;
-  border:1px solid rgba(0,0,0,0.1);
-  box-shadow:0 8px 28px rgba(0,0,0,0.06);
+  border:1px solid rgba(255,255,255,0.4);
+  box-shadow:0 8px 28px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.3);
   transition:transform .4s cubic-bezier(.16,1,.3,1),background .4s,border .4s;
   white-space:nowrap;
 }
-.dark-mode nav{background:rgba(13,13,13,0.9);border-color:rgba(255,255,255,0.1)}
+.dark-mode nav{background:rgba(25,25,25,0.6);border-color:rgba(255,255,255,0.12);box-shadow:0 8px 28px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06)}
 nav.hidden{transform:translate(-50%,-150%)}
 .nav-brand{font-family:var(--font-d);font-size:22px;letter-spacing:0.06em;color:var(--text-main)}
 .dark-mode .nav-brand{color:var(--text-inv)}
@@ -75,7 +90,7 @@ nav.hidden{transform:translate(-50%,-150%)}
 .nav-link{font-family:var(--font-m);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;text-decoration:none;transition:color .2s;font-weight:600}
 .dark-mode .nav-link{color:var(--text-muted-dark)}
 .nav-link:hover,.dark-mode .nav-link:hover{color:var(--accent)}
-.nav-cta{background:var(--text-main);color:var(--text-inv);padding:10px 24px;border-radius:100px;font-family:var(--font-m);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;text-decoration:none;transition:all .25s}
+.nav-cta{background:var(--text-main);color:var(--text-inv);padding:10px 24px;border-radius:100px;font-family:var(--font-m);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;text-decoration:none;transition:all .25s;box-shadow:inset 0 1px 1px rgba(255,255,255,0.2),0 4px 12px rgba(0,0,0,0.15);will-change:transform}
 .dark-mode .nav-cta{background:var(--text-inv);color:var(--text-main)}
 .nav-cta:hover{background:var(--accent);color:#fff;transform:scale(1.05)}
 
@@ -93,7 +108,7 @@ section{position:relative;z-index:2}
 .hero-title .accent-text{color:var(--accent)}
 .hero-arrow-row{display:flex;align-items:center;gap:24px;margin-top:20px}
 .hero-curved-arrow{width:55px;height:55px;border-bottom:3px solid var(--accent);border-right:3px solid var(--accent);border-bottom-right-radius:18px;transform:rotate(-45deg);margin-bottom:18px;flex-shrink:0}
-.hype-btn{background:var(--accent);color:#fff;padding:18px 44px;border-radius:100px;font-family:var(--font-d);font-size:26px;letter-spacing:0.05em;text-decoration:none;transition:all .3s;border:none;display:inline-flex;align-items:center;justify-content:center;box-shadow:var(--shadow-accent);position:relative;overflow:hidden}
+.hype-btn{background:var(--accent);color:#fff;padding:18px 44px;border-radius:100px;font-family:var(--font-d);font-size:26px;letter-spacing:0.05em;text-decoration:none;transition:all .3s;border:none;display:inline-flex;align-items:center;justify-content:center;box-shadow:var(--shadow-accent),inset 0 2px 3px rgba(255,255,255,0.35),inset 0 -3px 6px rgba(0,0,0,0.2);position:relative;overflow:hidden;will-change:transform}
 .hype-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transform:translateX(-100%);transition:transform .5s}
 .hype-btn:hover{background:var(--accent-hover);transform:translateY(-4px) scale(1.02);box-shadow:0 15px 50px rgba(255,70,37,0.5)}
 .hype-btn:hover::after{transform:translateX(100%)}
@@ -310,11 +325,11 @@ section{position:relative;z-index:2}
 .pgrid{display:none}
 .pgrid.on{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
 
-/* PRICING PILL CARDS (v4 style) */
-.price-pill{background:var(--bg-dark);border-radius:36px;padding:40px;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--text-inv);box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;transition:transform .4s,box-shadow .4s;overflow:hidden;cursor:none}
-.price-pill:hover{transform:translateY(-8px);box-shadow:var(--shadow-dark)}
+/* PRICING PILL CARDS — glassmorphism */
+.price-pill{background:rgba(25,25,25,0.6);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,0.1);border-radius:36px;padding:40px;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--text-inv);box-shadow:0 20px 60px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.06);position:relative;transition:transform .1s ease,box-shadow .4s;overflow:hidden;cursor:none;transform-style:preserve-3d}
+.price-pill:hover{box-shadow:0 30px 80px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1)}
 .price-pill *{color:var(--text-inv)}
-.price-pill.vip{background:var(--accent)}
+.price-pill.vip{background:rgba(255,70,37,0.75);border-color:rgba(255,255,255,0.18)}
 .price-pill.vip:hover{box-shadow:var(--shadow-accent)}
 .pp-tag{font-family:var(--font-m);font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:14px;opacity:.7}
 .pp-title{font-family:var(--font-d);font-size:52px;line-height:1;margin-bottom:8px}
@@ -327,7 +342,7 @@ section{position:relative;z-index:2}
 .pp-features li{font-size:13px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;gap:8px;line-height:1.4;opacity:.8}
 .pp-features li::before{content:'→';color:rgba(255,255,255,0.5);flex-shrink:0}
 .price-pill.vip .pp-features li::before{color:rgba(255,255,255,0.6)}
-.pp-btn{background:#fff;color:var(--text-main);font-family:var(--font-d);font-size:22px;letter-spacing:0.05em;padding:14px 44px;border-radius:100px;text-decoration:none;transition:all .3s;width:100%;border:none;cursor:none;display:block;text-align:center}
+.pp-btn{background:#fff;color:var(--text-main);font-family:var(--font-d);font-size:22px;letter-spacing:0.05em;padding:14px 44px;border-radius:100px;text-decoration:none;transition:all .3s;width:100%;border:none;cursor:none;display:block;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,0.15),inset 0 2px 2px rgba(255,255,255,0.6),inset 0 -3px 5px rgba(0,0,0,0.08);will-change:transform}
 .pp-btn:hover{background:#e8e8e8;transform:scale(1.02)}
 .price-pill.vip .pp-btn{color:var(--accent)}
 
@@ -425,8 +440,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
 .foot-syn{font-family:var(--font-m);font-size:9px;color:rgba(90,122,74,0.6);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
 
 /* ─── REVEALS ─── */
-.reveal{opacity:0;transform:translateY(48px)}
-.reveal-blur{opacity:0;filter:blur(10px);transform:translateY(20px)}
+.reveal{opacity:0;transform:translateY(48px);will-change:transform,opacity}
+.reveal-blur{opacity:0;filter:blur(10px);transform:translateY(20px);will-change:transform,opacity,filter}
 /* Pricing pills manage their own animation via switchTab — never stuck invisible */
 .pgrid .price-pill{opacity:0;transform:translateY(32px)}
 
@@ -455,7 +470,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
 </head>
 <body>
 
-<div class="ambient-bg" id="ambientBg"><div class="grid-overlay"></div></div>
+<div class="ambient-bg" id="ambientBg"><div class="mesh-layer"></div><div class="grid-overlay"></div></div>
 <div id="cur-ring"></div>
 <div id="prog"></div>
 
@@ -476,8 +491,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
   <div class="container hero-grid">
     <div class="hero-content reveal-blur">
       <div class="hero-meta">
-        <span class="pill">DELHI · 2025</span>
-        <span>India's Fastest Tech Studio</span>
+        <span class="pill">GLOBAL · 2025</span>
+        <span>Premium Offshore Product Studio</span>
       </div>
       <h1 class="hero-title">
         DIGITAL<br>
@@ -504,8 +519,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
             <div class="tc-label">Web Development</div>
             <div class="tc-title">LAUNCH<br>KIT</div>
             <div class="tc-price-row">
-              <span class="tc-price-cur">₹</span>
-              <span class="tc-price-main">8K – 25K</span>
+              <span class="tc-price-cur">$</span>
+              <span class="tc-price-main">1K – 4K</span>
               <span class="tc-price-sub">/ project</span>
             </div>
             <div class="tc-chips">
@@ -535,8 +550,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
             <div class="tc-label">MVP Development</div>
             <div class="tc-title">MVP<br>SYSTEM</div>
             <div class="tc-price-row">
-              <span class="tc-price-cur">₹</span>
-              <span class="tc-price-main">10K – 30K</span>
+              <span class="tc-price-cur">$</span>
+              <span class="tc-price-main">3,500 – 15K</span>
               <span class="tc-price-sub">/ project</span>
             </div>
             <div class="tc-chips">
@@ -566,8 +581,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
             <div class="tc-label">Scale Studio</div>
             <div class="tc-title">SCALE<br>ENGINE</div>
             <div class="tc-price-row">
-              <span class="tc-price-cur">₹</span>
-              <span class="tc-price-main">8K – 24K</span>
+              <span class="tc-price-cur">$</span>
+              <span class="tc-price-main">1K – 4K</span>
               <span class="tc-price-sub">/ month</span>
             </div>
             <div class="tc-chips">
@@ -628,25 +643,25 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <div class="sec-header reveal">
       <div class="sec-tag" style="color:var(--accent)">01 — The Arsenal</div>
       <h2 class="sec-title" style="color:var(--text-inv)">OUR CAPABILITIES.</h2>
-      <p class="sec-desc" style="color:var(--text-muted-dark)">Engineered for fast, honest product building. We design, validate and ship — faster than anyone in India.</p>
+      <p class="sec-desc" style="color:var(--text-muted-dark)">Architecting scalable products at startup speed. We design, validate, and ship — no bloated timelines, no excuses.</p>
     </div>
     <div class="glass-grid">
       <div class="glass-card tilt-card reveal">
         <div class="card-icon">01</div>
         <h3 class="card-title">Website Dev</h3>
-        <p class="card-desc">Modern, responsive websites — portfolio to full business site. Built clean in 1–2 weeks. Starting ₹8,000.</p>
+        <p class="card-desc">Modern, responsive websites built to convert — from portfolio to full business site, delivered in 1–2 weeks. Starting at $1,000.</p>
         <div class="card-action"><div class="pill-btn">Discover →</div></div>
       </div>
       <div class="glass-card tilt-card reveal" style="transition-delay:.1s">
         <div class="card-icon">02</div>
         <h3 class="card-title">MVP Builder</h3>
-        <p class="card-desc">Idea to working product in 2–4 weeks. Validate, design and build — ship before you overthink it. From ₹15K.</p>
+        <p class="card-desc">Idea to shipped product in 2–4 weeks. We validate, design, and build the system your users actually touch. From $3,500.</p>
         <div class="card-action"><div class="pill-btn">Discover →</div></div>
       </div>
       <div class="glass-card tilt-card reveal" style="transition-delay:.2s">
         <div class="card-icon">03</div>
         <h3 class="card-title">Scale Studio</h3>
-        <p class="card-desc">Continuous design and tech partnership. We act as your fractional product team — retainer from ₹8K/mo.</p>
+        <p class="card-desc">A dedicated product team on retainer — continuous design, engineering, and iteration. From $1,000/mo.</p>
         <div class="card-action"><div class="pill-btn">Discover →</div></div>
       </div>
     </div>
@@ -659,13 +674,13 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <div class="sec-header reveal">
       <div class="sec-tag">02 — The Method</div>
       <h2 class="sec-title">SIMPLE PROCESS.</h2>
-      <p class="sec-desc">No long calls. No 6-month timelines. Direct conversation, clear quote, we build.</p>
+      <p class="sec-desc">No long calls. No six-month timelines. A direct conversation, a clear quote, and we build.</p>
     </div>
     <div class="proc-grid">
-      <div class="pstep reveal" data-n="01"><div class="ps-n">01</div><div class="ps-title">Share Your Idea</div><div class="ps-desc">DM on Instagram, LinkedIn or WhatsApp. No deck needed — just tell us what you want.</div></div>
-      <div class="pstep reveal" data-n="02"><div class="ps-n">02</div><div class="ps-title">Validate & Quote</div><div class="ps-desc">We assess feasibility and send a clear fixed quote. No hidden charges. Ever.</div></div>
-      <div class="pstep reveal" data-n="03"><div class="ps-n">03</div><div class="ps-title">50% Advance & Build</div><div class="ps-desc">Work starts immediately. Regular updates. You see progress in real time.</div></div>
-      <div class="pstep reveal" data-n="04"><div class="ps-n">04</div><div class="ps-title">Deliver & Support</div><div class="ps-desc">Final delivery, handover, 3 revision rounds. 30-day support included always.</div></div>
+      <div class="pstep reveal" data-n="01"><div class="ps-n">01</div><div class="ps-title">Share Your Idea</div><div class="ps-desc">Message us on Instagram, LinkedIn, or WhatsApp. No deck required — just tell us what you're building.</div></div>
+      <div class="pstep reveal" data-n="02"><div class="ps-n">02</div><div class="ps-title">Validate & Quote</div><div class="ps-desc">We assess feasibility and send a fixed quote. No hidden charges, no scope creep. Ever.</div></div>
+      <div class="pstep reveal" data-n="03"><div class="ps-n">03</div><div class="ps-title">50% Advance & Build</div><div class="ps-desc">Work starts immediately, with regular updates so you see real progress in real time.</div></div>
+      <div class="pstep reveal" data-n="04"><div class="ps-n">04</div><div class="ps-title">Deliver & Support</div><div class="ps-desc">Final delivery, full handover, and three revision rounds. 30 days of support included, always.</div></div>
     </div>
   </div>
 </section>
@@ -676,7 +691,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <div class="sec-header reveal" style="text-align:center;max-width:700px;margin:0 auto 56px">
       <div class="sec-tag" style="justify-content:center">03 — Admissions</div>
       <h2 class="sec-title">SECURE YOUR SPOT.</h2>
-      <p class="sec-desc" style="margin:0 auto;text-align:center">Fixed quotes. Zero hidden fees. 50% advance only. Limited slots available each month.</p>
+      <p class="sec-desc" style="margin:0 auto;text-align:center">Fixed quotes. Zero hidden fees. 50% advance to start. Limited slots available each month.</p>
     </div>
     <div class="price-tabs">
       <button class="ptab on" onclick="switchTab('web',this)">Websites</button>
@@ -690,40 +705,40 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
         <div class="pp-tag">1–2 Pages</div>
         <h3 class="pp-title">BASIC LAUNCH</h3>
         <p class="pp-subdesc">For individuals needing a simple, clean online presence that works.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">8K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">1,000</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li>1–2 pages</li>
           <li>Mobile responsive</li>
           <li>Clean UI</li>
           <li>1 revision round</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Basic%20Launch*%20package%20(%E2%82%B95K).%0A%0A%E2%80%A2%201%E2%80%932%20page%20website%0A%E2%80%A2%20Mobile%20responsive%0A%E2%80%A2%201%20revision%20round%0A%0ACan%20we%20get%20started%3F" class="pp-btn" target="_blank">GET STARTED</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Basic%20Launch*%20package%20(%241%2C000).%0A%0A%E2%80%A2%201%E2%80%932%20page%20website%0A%E2%80%A2%20Mobile%20responsive%0A%E2%80%A2%201%20revision%20round%0A%0ACan%20we%20get%20started%3F" class="pp-btn" target="_blank">GET STARTED</a>
       </div>
       <div class="price-pill vip reveal">
         <div class="pp-tag">3–5 Pages</div>
         <h3 class="pp-title">STANDARD LAUNCH</h3>
         <p class="pp-subdesc">For creators and small businesses building a proper digital presence.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">15K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">2,000</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li><b>3–5 pages</b></li>
           <li><b>Responsive + SEO ready</b></li>
           <li>Clean UI/UX</li>
           <li>2 revision rounds</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Standard%20Launch*%20package%20(%E2%82%B910K).%0A%0A%E2%80%A2%203%E2%80%935%20page%20website%0A%E2%80%A2%20Responsive%20%2B%20SEO%20ready%0A%E2%80%A2%202%20revision%20rounds%0A%0ALet%E2%80%99s%20start%20the%20build!" class="pp-btn" target="_blank">START BUILD</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Standard%20Launch*%20package%20(%242%2C000).%0A%0A%E2%80%A2%203%E2%80%935%20page%20website%0A%E2%80%A2%20Responsive%20%2B%20SEO%20ready%0A%E2%80%A2%202%20revision%20rounds%0A%0ALet%E2%80%99s%20start%20the%20build!" class="pp-btn" target="_blank">START BUILD</a>
       </div>
       <div class="price-pill reveal">
         <div class="pp-tag">5–10 Pages</div>
         <h3 class="pp-title">PRO LAUNCH</h3>
         <p class="pp-subdesc">For founders who want a premium, conversion-focused website that sells.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">25K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">4,000</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li><b>5–10 pages</b></li>
           <li><b>CMS + Blog</b></li>
           <li>Advanced UI/UX</li>
           <li>3 revision rounds</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20secure%20a%20slot%20for%20the%20*Pro%20Launch*%20package%20(%E2%82%B915K).%0A%0A%E2%80%A2%205%E2%80%9310%20pages%0A%E2%80%A2%20CMS%20%2B%20Blog%0A%E2%80%A2%20Advanced%20UI%2FUX%0A%E2%80%A2%203%20revision%20rounds%0A%0ALet%E2%80%99s%20lock%20this%20in!" class="pp-btn" target="_blank">SECURE SLOT</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20secure%20a%20slot%20for%20the%20*Pro%20Launch*%20package%20(%244%2C000).%0A%0A%E2%80%A2%205%E2%80%9310%20pages%0A%E2%80%A2%20CMS%20%2B%20Blog%0A%E2%80%A2%20Advanced%20UI%2FUX%0A%E2%80%A2%203%20revision%20rounds%0A%0ALet%E2%80%99s%20lock%20this%20in!" class="pp-btn" target="_blank">SECURE SLOT</a>
       </div>
     </div>
 
@@ -733,40 +748,40 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
         <div class="pp-tag">1–2 Features</div>
         <h3 class="pp-title">MICRO MVP</h3>
         <p class="pp-subdesc">Test your idea quickly with a minimal working product real users can touch.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">10K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">3,500</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li>1–2 core features</li>
           <li>Basic UI</li>
           <li>Web app</li>
           <li>1 revision round</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20build%20a%20*Micro%20MVP*%20(%E2%82%B910K).%0A%0A%E2%80%A2%201%E2%80%932%20core%20features%0A%E2%80%A2%20Basic%20UI%0A%E2%80%A2%20Web%20app%0A%0ALet%E2%80%99s%20validate%20and%20build%20fast!" class="pp-btn" target="_blank">BUILD MVP</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20build%20a%20*Micro%20MVP*%20(%243%2C500).%0A%0A%E2%80%A2%201%E2%80%932%20core%20features%0A%E2%80%A2%20Basic%20UI%0A%E2%80%A2%20Web%20app%0A%0ALet%E2%80%99s%20validate%20and%20build%20fast!" class="pp-btn" target="_blank">BUILD MVP</a>
       </div>
       <div class="price-pill vip reveal">
         <div class="pp-tag">2–3 Weeks</div>
         <h3 class="pp-title">CORE MVP</h3>
         <p class="pp-subdesc">A structured MVP with essential features and a usable, polished UI.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">20K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">8,500</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li><b>2–3 core features</b></li>
           <li><b>Auth system</b></li>
           <li>Dashboard included</li>
           <li>2 revision rounds</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Core%20MVP*%20package%20(%E2%82%B920K).%0A%0A%E2%80%A2%202%E2%80%933%20core%20features%0A%E2%80%A2%20Auth%20system%0A%E2%80%A2%20Dashboard%0A%0ALet%E2%80%99s%20start%20the%20build!" class="pp-btn" target="_blank">START BUILD</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Core%20MVP*%20package%20(%248%2C500).%0A%0A%E2%80%A2%202%E2%80%933%20core%20features%0A%E2%80%A2%20Auth%20system%0A%E2%80%A2%20Dashboard%0A%0ALet%E2%80%99s%20start%20the%20build!" class="pp-btn" target="_blank">START BUILD</a>
       </div>
       <div class="price-pill reveal">
         <div class="pp-tag">3–4 Weeks</div>
         <h3 class="pp-title">FULL MVP</h3>
         <p class="pp-subdesc">A complete MVP ready for real users, real feedback, and real growth.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">30K</span><span class="pp-fees">START</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">15,000</span><span class="pp-fees">START</span></div>
         <ul class="pp-features">
           <li><b>Full product flow</b></li>
           <li><b>API integration</b></li>
           <li>Advanced UI</li>
           <li>3 revision rounds</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20ready%20to%20launch%20my%20*Full%20MVP*%20(%E2%82%B930K).%0A%0A%E2%80%A2%20Full%20product%20flow%0A%E2%80%A2%20API%20integration%0A%E2%80%A2%20Advanced%20UI%0A%0ALet%E2%80%99s%20get%20it%20live!" class="pp-btn" target="_blank">LAUNCH PRODUCT</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20ready%20to%20launch%20my%20*Full%20MVP*%20(%2415%2C000).%0A%0A%E2%80%A2%20Full%20product%20flow%0A%E2%80%A2%20API%20integration%0A%E2%80%A2%20Advanced%20UI%0A%0ALet%E2%80%99s%20get%20it%20live!" class="pp-btn" target="_blank">LAUNCH PRODUCT</a>
       </div>
     </div>
 
@@ -776,37 +791,37 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
         <div class="pp-tag">Monthly Retainer</div>
         <h3 class="pp-title">STARTER ENGINE</h3>
         <p class="pp-subdesc">Ongoing support for small projects that need consistent care and momentum.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">8K</span><span class="pp-fees">/MO</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">1,000</span><span class="pp-fees">/MO</span></div>
         <ul class="pp-features">
           <li>Minor updates</li>
           <li>Bug fixes</li>
           <li>Monthly support</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Starter%20Engine*%20retainer%20(%E2%82%B98K%2Fmo).%0A%0A%E2%80%A2%20Minor%20updates%0A%E2%80%A2%20Bug%20fixes%0A%E2%80%A2%20Monthly%20support%0A%0ACan%20we%20get%20started%3F" class="pp-btn" target="_blank">GET ACCESS</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20interested%20in%20the%20*Starter%20Engine*%20retainer%20(%241%2C000%2Fmo).%0A%0A%E2%80%A2%20Minor%20updates%0A%E2%80%A2%20Bug%20fixes%0A%E2%80%A2%20Monthly%20support%0A%0ACan%20we%20get%20started%3F" class="pp-btn" target="_blank">GET ACCESS</a>
       </div>
       <div class="price-pill vip reveal">
         <div class="pp-tag">Monthly Retainer</div>
         <h3 class="pp-title">GROWTH ENGINE</h3>
         <p class="pp-subdesc">Continuous product improvement and iteration for teams building in public.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">16K</span><span class="pp-fees">/MO</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">2,000</span><span class="pp-fees">/MO</span></div>
         <ul class="pp-features">
           <li><b>Weekly updates</b></li>
           <li><b>Feature improvements</b></li>
           <li>Priority support</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20start%20scaling%20with%20the%20*Growth%20Engine*%20retainer%20(%E2%82%B916K%2Fmo).%0A%0A%E2%80%A2%20Weekly%20updates%0A%E2%80%A2%20Feature%20improvements%0A%E2%80%A2%20Priority%20support%0A%0ALet%E2%80%99s%20talk!" class="pp-btn" target="_blank">START SCALE</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%20want%20to%20start%20scaling%20with%20the%20*Growth%20Engine*%20retainer%20(%242%2C000%2Fmo).%0A%0A%E2%80%A2%20Weekly%20updates%0A%E2%80%A2%20Feature%20improvements%0A%E2%80%A2%20Priority%20support%0A%0ALet%E2%80%99s%20talk!" class="pp-btn" target="_blank">START SCALE</a>
       </div>
       <div class="price-pill reveal">
         <div class="pp-tag">Monthly Retainer</div>
         <h3 class="pp-title">PRO ENGINE</h3>
         <p class="pp-subdesc">Full product partnership — dedicated execution, strategy, and fast iterations.</p>
-        <div class="pp-price-box"><span class="pp-cur">₹</span><span class="pp-amt">24K</span><span class="pp-fees">/MO</span></div>
+        <div class="pp-price-box"><span class="pp-cur">$</span><span class="pp-amt">4,000</span><span class="pp-fees">/MO</span></div>
         <ul class="pp-features">
           <li><b>Dedicated dev support</b></li>
           <li><b>Strategy + execution</b></li>
           <li>Fast iterations</li>
         </ul>
-        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20ready%20to%20scale%20with%20the%20*Pro%20Engine*%20retainer%20(%E2%82%B924K%2Fmo).%0A%0A%E2%80%A2%20Dedicated%20dev%20support%0A%E2%80%A2%20Strategy%20%2B%20execution%0A%E2%80%A2%20Fast%20iterations%0A%0ALet%E2%80%99s%20connect!" class="pp-btn" target="_blank">SCALE NOW</a>
+        <a href="https://wa.me/919204465448?text=Hey%20Delvrixo!%20%F0%9F%91%8B%20I%E2%80%99m%20ready%20to%20scale%20with%20the%20*Pro%20Engine*%20retainer%20(%244%2C000%2Fmo).%0A%0A%E2%80%A2%20Dedicated%20dev%20support%0A%E2%80%A2%20Strategy%20%2B%20execution%0A%E2%80%A2%20Fast%20iterations%0A%0ALet%E2%80%99s%20connect!" class="pp-btn" target="_blank">SCALE NOW</a>
       </div>
     </div>
   </div>
@@ -840,12 +855,12 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
         <div class="f-eyebrow">Founder & CEO</div>
         <div class="f-name">NITIN <em>RAJ.</em></div>
         <div class="f-role-t">Founder & CEO — Delvrixo Studios</div>
-        <p class="f-bio">Builder, hackathon competitor, and the driving force behind Delvrixo Studios. Started from zero — building products that matter for founders who can't afford to wait. Leading Delvrixo Syndicate on national competitive circuits while filling the gap big agencies leave behind.</p>
+        <p class="f-bio">Builder, hackathon competitor, and the driving force behind Delvrixo Studios. Provides Western startups with the speed and elite technical capability of a hackathon-winning team, at a fraction of US agency costs. Leading Delvrixo Syndicate on national competitive circuits while filling the gap big agencies leave behind.</p>
         <div class="f-tags">
           <span class="f-tag">MVP Builder</span>
           <span class="f-tag">Hackathon Lead</span>
           <span class="f-tag">SaaS Thinker</span>
-          <span class="f-tag">Delhi, India 🇮🇳</span>
+          <span class="f-tag">Global Remote Team 🌐</span>
           <span class="f-tag">⚔ Delvrixo Syndicate</span>
         </div>
         <div class="f-socials">
@@ -889,8 +904,8 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
           </div>
           <div class="flip-back">
             <div><div class="fl-label">B2C — Individuals</div><div class="fl-type">For Founders.</div></div>
-            <ul class="fl-list"><li>Student founders with app or website ideas</li><li>Solopreneurs building their first product</li><li>Creators needing portfolio or brand site</li><li>First-time entrepreneurs validating ideas</li><li>Anyone quoted ₹5L+ elsewhere</li></ul>
-            <div class="fl-price">From ₹8,000</div>
+            <ul class="fl-list"><li>Student founders with app or website ideas</li><li>Solopreneurs building their first product</li><li>Creators needing portfolio or brand site</li><li>First-time entrepreneurs validating ideas</li></ul>
+            <div class="fl-price">From $1,000</div>
           </div>
         </div>
       </div>
@@ -903,7 +918,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
           <div class="flip-back">
             <div><div class="fl-label">B2B — Businesses</div><div class="fl-type">For Startups.</div></div>
             <ul class="fl-list"><li>Early-stage startups needing MVP fast</li><li>Small businesses needing digital presence</li><li>Startups with product ready to scale</li><li>Companies needing reliable tech partner</li><li>Businesses that want honest fair pricing</li></ul>
-            <div class="fl-price">From ₹40,000</div>
+            <div class="fl-price">From $3,500</div>
           </div>
         </div>
       </div>
@@ -920,7 +935,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
       <p class="sec-desc" style="color:var(--text-muted-dark)">Six reasons founders pick us over every other option.</p>
     </div>
     <div class="why-grid">
-      <div class="wi reveal"><div class="wi-icon">⚡</div><div class="wi-title">Fastest in India</div><div class="wi-desc">MVPs in 2–4 weeks. Websites in 1–2 weeks. While others quote 3 months, we're done.</div></div>
+      <div class="wi reveal"><div class="wi-icon">⚡</div><div class="wi-title">Fastest to Ship</div><div class="wi-desc">MVPs in 2–4 weeks. Websites in 1–2 weeks. While others quote 3 months, we're done.</div></div>
       <div class="wi reveal"><div class="wi-icon">💰</div><div class="wi-title">Transparent Pricing</div><div class="wi-desc">No "contact us" nonsense. Fixed quotes. 50% advance. Zero surprises ever.</div></div>
       <div class="wi reveal"><div class="wi-icon">🤝</div><div class="wi-title">Founder to Founder</div><div class="wi-desc">We're builders too. We understand resource constraints and time pressure firsthand.</div></div>
       <div class="wi reveal"><div class="wi-icon">✅</div><div class="wi-title">Validate First</div><div class="wi-desc">We validate your idea before writing a single line of code. No wasted money.</div></div>
@@ -933,7 +948,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
 <!-- CTA — DARK -->
 <section class="cta-section" data-theme="dark">
   <div class="cta-inner reveal">
-    <div class="cta-tag">Limited Slots · Delhi 2025</div>
+    <div class="cta-tag">Limited Slots · 2025</div>
     <h2 class="cta-title">GOT AN <span class="ol">IDEA?</span><br><span class="or">LET'S SHIP IT.</span></h2>
     <p class="cta-sub">DM us directly — no forms, no waiting. Real conversation about what you want to build.</p>
     <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center">
@@ -963,7 +978,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <a href="https://wa.me/919204465448?text=Hey%20Nitin!%20%F0%9F%91%8B%20I%20found%20Delvrixo%20Studios%20and%20I%E2%80%99d%20love%20to%20chat%20about%20my%20project." target="_blank">WhatsApp</a>
   </div>
   <div>
-    <div class="foot-copy">© 2025 Delvrixo Studios · Delhi, India 🇮🇳</div>
+    <div class="foot-copy">© 2025 Delvrixo Studios · Global Product Studio 🌐</div>
     <div class="foot-syn">⚔ Delvrixo Syndicate — Hackathon Team</div>
   </div>
 </footer>
@@ -986,6 +1001,28 @@ window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
 document.querySelectorAll('a,button,.glass-card,.price-pill,.flip-card,.pstep,.wi').forEach(el=>{
   el.addEventListener('mouseenter',()=>ring.classList.add('magnet'));
   el.addEventListener('mouseleave',()=>ring.classList.remove('magnet'));
+});
+document.querySelectorAll('.hype-btn,.nav-cta,.pp-btn,.pill-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('cta-hover'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('cta-hover'));
+});
+document.querySelectorAll('.f-plate img, .tc-slide').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('img-hover'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('img-hover'));
+});
+
+// ── MAGNETIC BUTTONS
+document.querySelectorAll('.hype-btn,.nav-cta').forEach(btn=>{
+  const strength=btn.classList.contains('hype-btn') ? 0.35 : 0.4;
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width/2)*strength;
+    const y=(e.clientY-r.top-r.height/2)*strength;
+    gsap.to(btn,{x,y,duration:.4,ease:'power2.out'});
+  });
+  btn.addEventListener('mouseleave',()=>{
+    gsap.to(btn,{x:0,y:0,duration:.6,ease:'elastic.out(1,0.4)'});
+  });
 });
 
 // ── SCROLL PROGRESS
@@ -1015,8 +1052,8 @@ function applyTheme(t){
   else{ambientBg.classList.remove('dark-mode');document.body.classList.remove('dark-mode')}
 }
 
-// ── 3D TILT (glass cards)
-document.querySelectorAll('.glass-card').forEach(card=>{
+// ── 3D TILT (glass cards + pricing pills)
+document.querySelectorAll('.glass-card,.price-pill').forEach(card=>{
   card.addEventListener('mousemove',e=>{
     const r=card.getBoundingClientRect();
     const x=(e.clientX-r.left)/r.width-.5;
@@ -1120,14 +1157,28 @@ document.querySelectorAll('.glass-card').forEach(card=>{
     if(Math.abs(e.clientX-dragStartX)>40) advance();
     startAuto();
   });
+
+  // Subtle 3D tilt + glare on the active card (rotationX/Y only — doesn't touch stack's 2D rotation)
+  container.addEventListener('mousemove',e=>{
+    const active = slides[current];
+    if(!active) return;
+    const r = container.getBoundingClientRect();
+    const px = (e.clientX-r.left)/r.width-.5;
+    const py = (e.clientY-r.top)/r.height-.5;
+    gsap.to(active,{rotationX:-py*10,rotationY:px*10,transformPerspective:800,duration:.5,ease:'power2.out'});
+  });
+  container.addEventListener('mouseleave',()=>{
+    gsap.to(slides[current],{rotationX:0,rotationY:0,duration:.7,ease:'power2.out'});
+  });
 })();
 
 // ── SCROLL REVEALS (exclude pricing pills — managed separately)
 document.querySelectorAll('.reveal,.reveal-blur').forEach(el=>{
   if(el.closest('.pgrid')) return; // skip pricing pills
+  gsap.set(el,{scale:0.94});
   ScrollTrigger.create({
     trigger:el,start:'top 88%',once:true,
-    onEnter:()=>gsap.to(el,{y:0,opacity:1,filter:'blur(0px)',duration:1.1,ease:'power3.out'})
+    onEnter:()=>gsap.to(el,{y:0,scale:1,opacity:1,filter:'blur(0px)',duration:1.1,ease:'power3.out'})
   });
 });
 // GSAP stagger grids
