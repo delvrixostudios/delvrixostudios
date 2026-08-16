@@ -19,8 +19,8 @@ let CONTENT = null;
 const pendingUploads = new Map();
 const uploadSerials = new Map();
 
-function setSubmitState(isDisabled, label){
-  const button = document.querySelector('#testimonialForm button[type="submit"]');
+function setSubmitState(isDisabled, label, formSelector){
+  const button = document.querySelector((formSelector || '#testimonialForm') + ' button[type="submit"]');
   if(!button) return;
   button.disabled = !!isDisabled;
   if(label){
@@ -31,11 +31,11 @@ function setSubmitState(isDisabled, label){
   }
 }
 
-function invalidateUpload(hiddenInputId){
+function invalidateUpload(hiddenInputId, formSelector){
   uploadSerials.set(hiddenInputId, (uploadSerials.get(hiddenInputId) || 0) + 1);
   pendingUploads.delete(hiddenInputId);
   if(pendingUploads.size === 0){
-    setSubmitState(false);
+    setSubmitState(false, null, formSelector);
   }
 }
 
@@ -54,7 +54,14 @@ function populateHero(hero){
   for(const key in hero){
     if(form.elements[key]) form.elements[key].value = hero[key];
   }
+  document.getElementById('ceo_image_url').value = hero.ceo_image || '';
+  if(hero.ceo_image){
+    showPreview('ceoImagePreview', hero.ceo_image, 'ceo_image_url', '#heroForm');
+  }
 }
+document.getElementById('ceo_image_file').addEventListener('change', async (e)=>{
+  await handleImageUpload(e.target, 'ceo_image_url', 'ceoImagePreview', '#heroForm');
+});
 document.getElementById('heroForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const form = e.target;
@@ -62,6 +69,7 @@ document.getElementById('heroForm').addEventListener('submit', async (e)=>{
   ['meta_pill','meta_text','title_line1','title_line2','title_line3'].forEach(k=>{
     body[k] = form.elements[k].value;
   });
+  body.ceo_image = document.getElementById('ceo_image_url').value;
   const res = await fetch('/api/admin/hero', {
     method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
   });
@@ -225,7 +233,7 @@ async function uploadFile(file){
   if(!res.ok) throw new Error(data.error || 'Upload failed');
   return data.url;
 }
-async function handleImageUpload(inputEl, hiddenInputId, previewId){
+async function handleImageUpload(inputEl, hiddenInputId, previewId, formSelector){
   const file = inputEl.files && inputEl.files[0];
   if(!file) return;
 
@@ -233,7 +241,7 @@ async function handleImageUpload(inputEl, hiddenInputId, previewId){
   uploadSerials.set(hiddenInputId, uploadSerial);
   const uploadPromise = uploadFile(file);
   pendingUploads.set(hiddenInputId, uploadPromise);
-  setSubmitState(true, 'Uploading...');
+  setSubmitState(true, 'Uploading...', formSelector);
 
   try{
     const url = await uploadPromise;
@@ -251,7 +259,7 @@ async function handleImageUpload(inputEl, hiddenInputId, previewId){
       pendingUploads.delete(hiddenInputId);
     }
     if(pendingUploads.size === 0){
-      setSubmitState(false);
+      setSubmitState(false, null, formSelector);
     }
   }
 }
@@ -284,7 +292,7 @@ async function handleImageBatchUpload(inputEl, hiddenInputId, previewId){
     }
   }
 }
-function showPreview(containerId, url, hiddenInputId){
+function showPreview(containerId, url, hiddenInputId, formSelector){
   const box = document.getElementById(containerId);
   if(!url){ box.innerHTML = ''; return; }
   box.innerHTML = `<div class="up-remove"><img src="${url}"><button type="button" title="Remove">×</button></div>`;
@@ -292,7 +300,7 @@ function showPreview(containerId, url, hiddenInputId){
     document.getElementById(hiddenInputId).value = '';
     const fileInput = document.getElementById(hiddenInputId.replace('_url', '_file'));
     if(fileInput) fileInput.value = '';
-    invalidateUpload(hiddenInputId);
+    invalidateUpload(hiddenInputId, formSelector);
     box.innerHTML = '';
   });
 }
