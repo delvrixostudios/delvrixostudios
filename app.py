@@ -1,7 +1,9 @@
 """
 Delvrixo Studios — Full Site + Admin Panel (single Flask app)
-Pure Python (Flask) backend. Admin frontend is plain HTML/CSS/JS.
-Content is stored in data/content.json — no external DB required.
+Data lives in Firebase Realtime Database (no local files, so it survives
+Render free-tier restarts). Admin login uses Firebase Authentication
+(email/password) behind the scenes — the login screen still just asks for
+a plain username + password so nothing changes for you.
 
 Run:
     pip install -r requirements.txt
@@ -9,27 +11,23 @@ Run:
 
 Then:
     Public site  ->  http://127.0.0.1:5000/
-    Admin panel  ->  http://127.0.0.1:5000/admin   (default login below)
+    Admin panel  ->  http://127.0.0.1:5000/admin   (see README for the one-time
+                       Firebase setup: create the RTDB + the admin auth user)
 """
 
-import json
+import base64
 import os
-import uuid
 from functools import wraps
 from pathlib import Path
 
+import pyrebase
 from flask import (
     Flask, jsonify, request, session, redirect, url_for,
     render_template, send_from_directory,
 )
-from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_FILE = BASE_DIR / "data" / "content.json"
-UPLOAD_DIR = BASE_DIR / "static" / "uploads"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXT = {"png", "jpg", "jpeg", "webp", "gif"}
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024  # 20MB
 
@@ -37,28 +35,55 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("ADMIN_SECRET_KEY", "delvrixo-dev-secret-change-me")
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_BYTES
 
-# ── Admin credentials (change these, or set env vars ADMIN_USER / ADMIN_PASS_HASH) ──
-ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
-ADMIN_PASS_HASH = os.environ.get(
-    "ADMIN_PASS_HASH",
-    generate_password_hash("delvrixo2025"),
-)
+# ───────────────────────── Firebase setup ─────────────────────────
+FIREBASE_CONFIG = {
+    "apiKey": "AIzaSyClHoL6BPdnibnwvO5vpiwyrNy3KCSoYaE",
+    "authDomain": "delvrixo-studios.firebaseapp.com",
+    "databaseURL": "https://delvrixo-studios-default-rtdb.firebaseio.com",
+    "projectId": "delvrixo-studios",
+    "storageBucket": "delvrixo-studios.firebasestorage.app",
+    "messagingSenderId": "755041568240",
+    "appId": "1:755041568240:web:d3acb3487d8cf2e8d78935",
+    "measurementId": "G-DW4V1DSLY1",
+}
+
+firebase = pyrebase.initialize_app(FIREBASE_CONFIG)
+fb_db = firebase.database()
+fb_auth = firebase.auth()
+
+# The login screen still asks for a plain "username" (not an email), but Firebase
+# Authentication needs a real email/password account under the hood. This fixed
+# username maps to a fixed email in your Firebase project — see README for the
+# one-time step of creating that user in Firebase Console → Authentication.
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_FIREBASE_EMAIL = os.environ.get("ADMIN_FIREBASE_EMAIL", "admin@delvrixo-studios.firebaseapp.com")
+
+DEFAULT_CONTENT = {
+    "hero": {
+        "meta_pill": "GLOBAL · 2025",
+        "meta_text": "Premium Offshore Product Studio",
+        "title_line1": "DIGITAL",
+        "title_line2": "PRODUCT",
+        "title_line3": "STUDIO",
+        "ceo_image": "",
+    },
+    "pricing": {
+        "web_basic":     {"label": "BASIC LAUNCH",    "usd": 1000,  "inr": 15000},
+        "web_standard":  {"label": "STANDARD LAUNCH", "usd": 2000,  "inr": 25000},
+        "web_pro":       {"label": "PRO LAUNCH",      "usd": 4000,  "inr": 45000},
+        "mvp_micro":     {"label": "MICRO MVP",       "usd": 3500,  "inr": 45000},
+        "mvp_core":      {"label": "CORE MVP",        "usd": 8500,  "inr": 90000},
+        "mvp_full":      {"label": "FULL MVP",        "usd": 15000, "inr": 150000},
+        "scale_starter": {"label": "STARTER ENGINE",  "usd": 1000,  "inr": 10000},
+        "scale_growth":  {"label": "GROWTH ENGINE",   "usd": 2000,  "inr": 20000},
+        "scale_pro":     {"label": "PRO ENGINE",      "usd": 4000,  "inr": 35000},
+    },
+    "testimonials": {},
+    "next_testimonial_id": 1,
+}
 
 
-# ───────────────────────── Data helpers ─────────────────────────
-def load_data():
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return normalize_data(json.load(f))
-
-
-def save_data(data):
-    data = normalize_data(data)
-    tmp_path = DATA_FILE.with_suffix(".tmp")
-    with open(tmp_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    tmp_path.replace(DATA_FILE)
-
-
+# ───────────────────────── Data helpers (Firebase Realtime Database) ─────────────────────────
 def normalize_proof_images(testimonial):
     proof_images = testimonial.get("proof_images")
     if isinstance(proof_images, list):
@@ -74,12 +99,6 @@ def normalize_proof_images(testimonial):
     return testimonial
 
 
-def normalize_data(data):
-    if isinstance(data, dict) and isinstance(data.get("testimonials"), list):
-        data["testimonials"] = [normalize_proof_images(dict(t)) for t in data["testimonials"]]
-    return data
-
-
 def parse_proof_images(body):
     proof_images = body.get("proof_images")
     if isinstance(proof_images, list):
@@ -87,6 +106,60 @@ def parse_proof_images(body):
 
     legacy = str(body.get("proof_image", "")).strip()
     return [legacy] if legacy else []
+
+
+def _testimonials_val_to_list(raw):
+    """RTDB stores objects as {id: {...}} — convert to the list shape every
+    route in this file already expects (unchanged from the old JSON-file version)."""
+    if not raw:
+        return []
+    items = raw.values() if isinstance(raw, dict) else raw
+    cleaned = [normalize_proof_images(dict(t)) for t in items if t]
+    return sorted(cleaned, key=lambda t: t.get("id", 0))
+
+
+def load_data():
+    """Fetch the whole /content node from Firebase. Seeds sensible defaults
+    the very first time it's called (i.e. on a brand-new Firebase project)."""
+    val = fb_db.child("content").get().val()
+    if not val:
+        fb_db.child("content").set(DEFAULT_CONTENT)
+        val = DEFAULT_CONTENT
+
+    return {
+        "hero": {**DEFAULT_CONTENT["hero"], **(val.get("hero") or {})},
+        "pricing": val.get("pricing") or DEFAULT_CONTENT["pricing"],
+        "testimonials": _testimonials_val_to_list(val.get("testimonials")),
+        "next_testimonial_id": val.get("next_testimonial_id", 1),
+    }
+
+
+def save_data(data):
+    """Write the whole /content node back to Firebase in one call — same
+    call shape every route below already used with the old JSON file."""
+    testimonials_dict = {
+        str(t["id"]): normalize_proof_images(dict(t)) for t in data["testimonials"]
+    }
+    fb_db.child("content").set({
+        "hero": data["hero"],
+        "pricing": data["pricing"],
+        "testimonials": testimonials_dict,
+        "next_testimonial_id": data.get("next_testimonial_id", 1),
+    })
+
+
+def image_to_data_uri(file_storage):
+    """Read an uploaded image straight into memory and return it as an
+    embeddable base64 data: URI — no filesystem writes at all, so this
+    works fine on ephemeral hosts (Render free tier) and needs nothing
+    beyond the Realtime Database (no Firebase Storage / billing required)."""
+    ext = file_storage.filename.rsplit(".", 1)[-1].lower() if "." in file_storage.filename else ""
+    if ext not in ALLOWED_EXT:
+        return None
+    mime = "image/jpeg" if ext == "jpg" else f"image/{ext}"
+    raw_bytes = file_storage.read()
+    b64 = base64.b64encode(raw_bytes).decode("ascii")
+    return f"data:{mime};base64,{b64}"
 
 
 def login_required(fn):
@@ -116,7 +189,7 @@ def public_site():
     return send_from_directory(BASE_DIR, "index.html")
 
 
-# ───────────────────────── Auth routes ─────────────────────────
+# ───────────────────────── Auth routes (Firebase Authentication) ─────────────────────────
 @app.route("/admin/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -125,15 +198,20 @@ def login():
         return render_template("login.html")
 
     payload = request.get_json(silent=True) or request.form
-    username = payload.get("username", "")
-    password = payload.get("password", "")
+    username = (payload.get("username", "") or "").strip()
+    password = payload.get("password", "") or ""
 
-    if username == ADMIN_USER and check_password_hash(ADMIN_PASS_HASH, password):
-        session["logged_in"] = True
-        session["username"] = username
-        return jsonify({"ok": True, "redirect": url_for("dashboard")})
+    if username != ADMIN_USERNAME:
+        return jsonify({"ok": False, "error": "Invalid username or password"}), 401
 
-    return jsonify({"ok": False, "error": "Invalid username or password"}), 401
+    try:
+        fb_auth.sign_in_with_email_and_password(ADMIN_FIREBASE_EMAIL, password)
+    except Exception:
+        return jsonify({"ok": False, "error": "Invalid username or password"}), 401
+
+    session["logged_in"] = True
+    session["username"] = username
+    return jsonify({"ok": True, "redirect": url_for("dashboard")})
 
 
 @app.route("/admin/logout", methods=["POST"])
@@ -159,13 +237,11 @@ def admin_upload_image():
     if f.filename == "":
         return jsonify({"error": "No file selected"}), 400
 
-    ext = f.filename.rsplit(".", 1)[-1].lower() if "." in f.filename else ""
-    if ext not in ALLOWED_EXT:
+    data_uri = image_to_data_uri(f)
+    if not data_uri:
         return jsonify({"error": f"Unsupported file type. Allowed: {', '.join(sorted(ALLOWED_EXT))}"}), 400
 
-    safe_name = f"{uuid.uuid4().hex}.{ext}"
-    f.save(UPLOAD_DIR / secure_filename(safe_name))
-    return jsonify({"ok": True, "url": f"/static/uploads/{safe_name}"})
+    return jsonify({"ok": True, "url": data_uri})
 
 
 # ───────────────────────── Admin API (requires login) ─────────────────────────
@@ -291,4 +367,3 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000)),
     )
-
