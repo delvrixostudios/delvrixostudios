@@ -1038,7 +1038,7 @@ footer{border-top:2px solid var(--bg-dark);padding:36px 5%;display:flex;justify-
     <div class="founder-grid">
       <div class="f-visual reveal">
         <div class="f-plate">
-          <img src="ceo4.png" alt="Nitin Raj" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <img id="ceoImage" src="ceo4.png" alt="Nitin Raj" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div class="f-plate-fallback" style="display:none;flex-direction:column;align-items:center">
             <div class="f-plate-letter">N</div>
             <div class="f-plate-name">NITIN</div>
@@ -1408,6 +1408,15 @@ function loadSiteContent(){
         Object.entries(map).forEach(([id,val])=>{
           if(val){ const el=document.getElementById(id); if(el) el.textContent = val; }
         });
+        if(h.ceo_image){
+          const img = document.getElementById('ceoImage');
+          if(img){
+            img.src = h.ceo_image;
+            img.style.display = '';
+            const fallback = img.nextElementSibling;
+            if(fallback) fallback.style.display = 'none';
+          }
+        }
       }
       if(data.pricing){
         document.querySelectorAll('[data-pkey]').forEach(el=>{
