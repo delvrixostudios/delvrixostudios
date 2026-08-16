@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "meta_pill": "GLOBAL · 2025",
+    "meta_text": "Premium Offshore Product Studio",
+    "title_line1": "DIGITAL",
+    "title_line2": "PRODUCT",
+    "title_line3": "STUDIO"
+  },
+  "pricing": {
+    "web_basic": {
+      "label": "BASIC LAUNCH",
+      "usd": 1000,
+      "inr": 15000
+    },
+    "web_standard": {
+      "label": "STANDARD LAUNCH",
+      "usd": 2000,
+      "inr": 25000
+    },
+    "web_pro": {
+      "label": "PRO LAUNCH",
+      "usd": 4000,
+      "inr": 45000
+    },
+    "mvp_micro": {
+      "label": "MICRO MVP",
+      "usd": 3500,
+      "inr": 45000
+    },
+    "mvp_core": {
+      "label": "CORE MVP",
+      "usd": 8500,
+      "inr": 90000
+    },
+    "mvp_full": {
+      "label": "FULL MVP",
+      "usd": 15000,
+      "inr": 150000
+    },
+    "scale_starter": {
+      "label": "STARTER ENGINE",
+      "usd": 1000,
+      "inr": 10000
+    },
+    "scale_growth": {
+      "label": "GROWTH ENGINE",
+      "usd": 2000,
+      "inr": 20000
+    },
+    "scale_pro": {
+      "label": "PRO ENGINE",
+      "usd": 4000,
+      "inr": 35000
+    }
+  },
+  "testimonials": [],
+  "next_testimonial_id": 5
+}

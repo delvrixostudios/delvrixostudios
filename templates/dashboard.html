@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel · Delvrixo Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;600&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+
+<header class="admin-topbar">
+  <div class="admin-brand">DELVRIXO<em>.</em> <span>ADMIN</span></div>
+  <div class="admin-user">
+    <span>{{ username }}</span>
+    <button id="logoutBtn" class="logout-btn">Log Out</button>
+  </div>
+</header>
+
+<div class="admin-shell">
+  <nav class="admin-nav">
+    <button class="nav-item on" data-tab="hero">Hero &amp; Site Text</button>
+    <button class="nav-item" data-tab="pricing">Pricing</button>
+    <button class="nav-item" data-tab="testimonials">Testimonials</button>
+  </nav>
+
+  <main class="admin-main">
+
+    <!-- HERO TAB -->
+    <section class="tab-panel on" id="tab-hero">
+      <h1 class="panel-title">Hero &amp; Site Text</h1>
+      <p class="panel-desc">Edit the headline text shown at the top of the homepage.</p>
+      <form id="heroForm" class="panel-form">
+        <div class="field-row">
+          <label>Meta Pill Label</label>
+          <input type="text" name="meta_pill">
+        </div>
+        <div class="field-row">
+          <label>Meta Text</label>
+          <input type="text" name="meta_text">
+        </div>
+        <div class="field-row three">
+          <div>
+            <label>Title Line 1</label>
+            <input type="text" name="title_line1">
+          </div>
+          <div>
+            <label>Title Line 2</label>
+            <input type="text" name="title_line2">
+          </div>
+          <div>
+            <label>Title Line 3 (accent)</label>
+            <input type="text" name="title_line3">
+          </div>
+        </div>
+        <button type="submit" class="save-btn">Save Changes</button>
+        <span class="save-status" id="heroStatus"></span>
+      </form>
+    </section>
+
+    <!-- PRICING TAB -->
+    <section class="tab-panel" id="tab-pricing">
+      <h1 class="panel-title">Pricing</h1>
+      <p class="panel-desc">Update USD and INR amounts. Changes apply instantly to the public API.</p>
+      <form id="pricingForm" class="panel-form">
+        <div id="pricingGrid" class="pricing-grid"></div>
+        <button type="submit" class="save-btn">Save All Pricing</button>
+        <span class="save-status" id="pricingStatus"></span>
+      </form>
+    </section>
+
+    <!-- TESTIMONIALS TAB -->
+    <section class="tab-panel" id="tab-testimonials">
+      <h1 class="panel-title">Testimonials &amp; Reviews</h1>
+      <p class="panel-desc">Add, edit, publish/unpublish, or remove client testimonials shown on the site.</p>
+
+      <button id="newTestimonialBtn" class="new-btn">+ Add Testimonial</button>
+
+      <div id="testimonialList" class="testimonial-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- TESTIMONIAL EDIT MODAL -->
+<div class="modal-overlay" id="testimonialModal">
+  <div class="modal-card">
+    <h2 id="modalTitle">Add Testimonial</h2>
+    <form id="testimonialForm">
+      <input type="hidden" id="tid" name="id">
+      <div class="field-row two">
+        <div>
+          <label>Name</label>
+          <input type="text" id="t_name" required>
+        </div>
+        <div>
+          <label>Role</label>
+          <input type="text" id="t_role">
+        </div>
+      </div>
+      <div class="field-row two">
+        <div>
+          <label>Company</label>
+          <input type="text" id="t_company">
+        </div>
+        <div>
+          <label>Region</label>
+          <select id="t_location">
+            <option value="intl">Outside India</option>
+            <option value="india">India</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <label>Testimonial Text</label>
+        <textarea id="t_text" rows="4" required></textarea>
+      </div>
+      <div class="field-row two">
+        <div>
+          <label>Rating (1–5)</label>
+          <input type="number" id="t_rating" min="1" max="5" value="5">
+        </div>
+        <div class="checkbox-row">
+          <label><input type="checkbox" id="t_published" checked> Published (visible on site)</label>
+        </div>
+      </div>
+      <div class="field-row two">
+        <div>
+          <label>Client Photo</label>
+          <input type="file" id="t_avatar_file" accept="image/png,image/jpeg,image/webp,image/gif">
+          <input type="hidden" id="t_avatar_url">
+          <div class="upload-preview" id="avatarPreview"></div>
+        </div>
+        <div>
+          <label>Extra Images / Attachments</label>
+          <input type="file" id="t_proof_files" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+          <input type="hidden" id="t_proof_urls" value="[]">
+          <div class="upload-preview" id="proofPreview"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="cancelModalBtn">Cancel</button>
+        <button type="submit" class="save-btn">Save Testimonial</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body>
+</html>

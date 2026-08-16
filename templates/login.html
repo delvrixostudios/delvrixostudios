@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login · Delvrixo Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="login-body">
+  <div class="login-card">
+    <div class="login-glow"></div>
+    <div class="login-brand">DELVRIXO<em>.</em></div>
+    <div class="login-sub">ADMIN PANEL</div>
+    <form id="loginForm">
+      <label>Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required>
+      <label>Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+      <div id="loginError" class="login-error"></div>
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+  </div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errBox = document.getElementById('loginError');
+  errBox.textContent = '';
+  const body = {
+    username: document.getElementById('username').value,
+    password: document.getElementById('password').value
+  };
+  try{
+    const res = await fetch('/admin/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(res.ok && data.ok){
+      window.location.href = data.redirect || '/admin';
+    } else {
+      errBox.textContent = data.error || 'Login failed';
+    }
+  } catch(err){
+    errBox.textContent = 'Could not reach server.';
+  }
+});
+</script>
+</body>
+</html>
